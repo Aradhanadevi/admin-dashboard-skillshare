@@ -25,7 +25,7 @@ ChartJS.register(
 );
 
 const UsersCharts = ({ users = [] }) => {
-  // ✅ fallback dummy data for testing if users array is empty
+  // Fallback dummy data for testing if no users passed
   const usersToUse =
     users.length > 0
       ? users
@@ -50,7 +50,7 @@ const UsersCharts = ({ users = [] }) => {
           },
         ];
 
-  // Role distribution
+  // Pie chart - User roles
   const roleCounts = usersToUse.reduce((acc, user) => {
     const role = user.role || "Unknown";
     acc[role] = (acc[role] || 0) + 1;
@@ -63,12 +63,42 @@ const UsersCharts = ({ users = [] }) => {
       {
         label: "User Roles",
         data: Object.values(roleCounts),
-        backgroundColor: ["#36a2eb", "#ff6384", "#ffce56", "#4bc0c0"],
+        backgroundColor: [
+          "#3182ce",
+          "#38a169",
+          "#d69e2e",
+          "#805ad5",
+          "#e53e3e",
+          "#00b5d8",
+        ],
       },
     ],
   };
 
-  // Registration Over Time
+  const roleOptions = {
+    plugins: {
+      legend: {
+        position: "bottom",
+        labels: {
+          color: "#333",
+          font: {
+            size: 14,
+          },
+        },
+      },
+      title: {
+        display: true,
+        text: "User Roles Distribution",
+        color: "#333",
+        font: {
+          size: 18,
+          weight: "bold",
+        },
+      },
+    },
+  };
+
+  // Line chart - User registrations over time
   const registrations = usersToUse
     .filter((u) => u.createdAt)
     .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
@@ -77,53 +107,76 @@ const UsersCharts = ({ users = [] }) => {
     labels: registrations.map((u) => new Date(u.createdAt)),
     datasets: [
       {
-        label: "New Users",
+        label: "Cumulative Users",
         data: registrations.map((_, idx) => idx + 1),
         fill: false,
-        borderColor: "#36a2eb",
+        borderColor: "#3182ce",
+        backgroundColor: "#3182ce",
         tension: 0.1,
       },
     ],
   };
 
-  return (
-    <div>
-      <h3>User Analytics</h3>
+  const lineOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: "bottom",
+        labels: {
+          color: "#333",
+        },
+      },
+      title: {
+        display: true,
+        text: "User Registrations Over Time",
+        color: "#333",
+        font: {
+          size: 18,
+          weight: "bold",
+        },
+      },
+    },
+    scales: {
+      x: {
+        type: "time",
+        time: {
+          unit: "month",
+        },
+        ticks: {
+          color: "#333",
+        },
+        title: {
+          display: true,
+          text: "Registration Date",
+          color: "#333",
+        },
+      },
+      y: {
+        beginAtZero: true,
+        ticks: {
+          color: "#333",
+          precision: 0,
+        },
+        title: {
+          display: true,
+          text: "Cumulative Users",
+          color: "#333",
+        },
+      },
+    },
+  };
 
-      <div style={{ maxWidth: "400px", marginBottom: "30px" }}>
-        <Pie data={roleData} />
+  return (
+    <div className="users-charts-container">
+      <h3 className="section-title">User Analytics</h3>
+
+      <div style={{ maxWidth: "400px", margin: "0 auto 30px" }}>
+        <Pie data={roleData} options={roleOptions} />
       </div>
 
       {registrations.length > 0 && (
-        <div style={{ maxWidth: "600px", marginBottom: "30px" }}>
-          <Line
-            data={registrationData}
-            options={{
-              scales: {
-                x: {
-                  type: "time",
-                  time: { unit: "month" },
-                  title: {
-                    display: true,
-                    text: "Registration Date",
-                  },
-                },
-                y: {
-                  title: {
-                    display: true,
-                    text: "Cumulative Users",
-                  },
-                  beginAtZero: true,
-                  precision: 0,
-                },
-              },
-              plugins: {
-                legend: {
-                  position: "bottom",
-                },
-              },
-            }}
-          />
+        <div style={{ maxWidth: "800px", margin: "0 auto" }}>
+          <Line data={registrationData} options={lineOptions} />
         </div>
       )}
     </div>

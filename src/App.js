@@ -54,45 +54,35 @@ function App() {
           </ul>
         </nav>
 
-        <DarkModeToggle />
+        <div className="dark-mode-wrapper">
+          <DarkModeToggle />
+        </div>
       </aside>
 
       {/* Main Content */}
       <main className="main-content">
-        <header className="header">
-          <h1>SkillShare Admin Dashboard</h1>
-        </header>
+        <h2>Add New Courses</h2>
+        <section id="addcourse" className="section section-card">
+          <AddCourse />
+        </section>
 
-        {/* Two-Column Layout */}
-        <div className="grid-layout">
-          <div className="grid-column">
-            <section id="addcourse" className="section section-card">
-              <h2>Add New Course</h2>
-              <AddCourse />
-            </section>
+        <section id="courses" className="section section-card">
+          {/* <h2>Courses</h2> */}
+          <CoursesTable />
+        </section>
 
-            <section id="courses" className="section section-card">
-              <h2>Courses</h2>
-              <CoursesTable />
-            </section>
-          </div>
+        <section id="users" className="section section-card">
+          {/* <h2>Users</h2> */}
+          <UsersTable />
+        </section>
 
-          <div className="grid-column">
-            <section id="users" className="section section-card">
-              <h2>Users</h2>
-              <UsersTable />
-            </section>
+        <section id="registered" className="section section-card">
+          {/* <h2>Registered Courses</h2> */}
+          <RegisteredCoursesTable />
+        </section>
 
-            <section id="registered" className="section section-card">
-              <h2>Registered Courses</h2>
-              <RegisteredCoursesTable />
-            </section>
-          </div>
-        </div>
-
-        {/* Full-width Graphs at the Bottom */}
         <section id="overview" className="section section-card full-width-graph">
-          <h2>Analytics & Insights</h2>
+          {/* <h2>Analytics & Insights</h2> */}
           <DashboardOverview />
         </section>
       </main>

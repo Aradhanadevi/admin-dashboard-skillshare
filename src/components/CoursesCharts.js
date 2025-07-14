@@ -19,9 +19,19 @@ ChartJS.register(
   Legend
 );
 
-const CoursesCharts = ({ courses }) => {
-  // Example: Pie chart of categories
-  const categoryCounts = courses.reduce((acc, course) => {
+const CoursesCharts = ({ courses = [] }) => {
+  // Fallback dummy data for testing if courses array is empty
+  const dataToUse =
+    courses.length > 0
+      ? courses
+      : [
+          { courseName: "React Basics", Category: "Web Dev", noofvideos: 10 },
+          { courseName: "Python for Data Science", Category: "Data Science", noofvideos: 8 },
+          { courseName: "UI/UX Design", Category: "Design", noofvideos: 12 },
+        ];
+
+  // Pie chart: number of courses per category
+  const categoryCounts = dataToUse.reduce((acc, course) => {
     const category = course.Category || "Unknown";
     acc[category] = (acc[category] || 0) + 1;
     return acc;
@@ -34,37 +44,98 @@ const CoursesCharts = ({ courses }) => {
         label: "Number of Courses",
         data: Object.values(categoryCounts),
         backgroundColor: [
-          "#ff6384",
-          "#36a2eb",
-          "#ffce56",
-          "#4bc0c0",
-          "#9966ff",
-          "#ff9f40",
+          "#3182ce",
+          "#38a169",
+          "#d69e2e",
+          "#805ad5",
+          "#e53e3e",
+          "#00b5d8",
         ],
       },
     ],
   };
 
-  // Example: Bar chart of videos per course
+  const pieOptions = {
+    plugins: {
+      legend: {
+        position: "bottom",
+        labels: {
+          color: "#333",
+          font: {
+            size: 14,
+          },
+        },
+      },
+      title: {
+        display: true,
+        text: "Courses by Category",
+        color: "#333",
+        font: {
+          size: 18,
+          weight: "bold",
+        },
+      },
+    },
+  };
+
+  // Bar chart: videos per course
   const barData = {
-    labels: courses.map((course) => course.courseName),
+    labels: dataToUse.map((c) => c.courseName),
     datasets: [
       {
         label: "Number of Videos",
-        data: courses.map((course) => Number(course.noofvideos)),
-        backgroundColor: "#36a2eb",
+        data: dataToUse.map((c) => Number(c.noofvideos)),
+        backgroundColor: "#3182ce",
+        borderRadius: 6,
       },
     ],
   };
 
+  const barOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: "bottom",
+        labels: {
+          color: "#333",
+        },
+      },
+      title: {
+        display: true,
+        text: "Videos per Course",
+        color: "#333",
+        font: {
+          size: 18,
+          weight: "bold",
+        },
+      },
+    },
+    scales: {
+      x: {
+        ticks: {
+          color: "#333",
+        },
+      },
+      y: {
+        beginAtZero: true,
+        ticks: {
+          color: "#333",
+          precision: 0,
+        },
+      },
+    },
+  };
+
   return (
-    <div>
-      <h3>Courses Analytics</h3>
-      <div style={{ maxWidth: "400px", marginBottom: "30px" }}>
-        <Pie data={pieData} />
+    <div className="courses-charts-container">
+      <h3 className="section-title">Courses Analytics</h3>
+
+      <div style={{ maxWidth: "400px", margin: "0 auto 30px" }}>
+        <Pie data={pieData} options={pieOptions} />
       </div>
-      <div style={{ maxWidth: "600px" }}>
-        <Bar data={barData} />
+
+      <div style={{ maxWidth: "800px", margin: "0 auto" }}>
+        <Bar data={barData} options={barOptions} />
       </div>
     </div>
   );

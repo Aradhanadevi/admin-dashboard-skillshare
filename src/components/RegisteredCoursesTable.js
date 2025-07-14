@@ -8,12 +8,10 @@ const RegisteredCoursesTable = () => {
   useEffect(() => {
     const db = getDatabase();
 
-    // Load users first
     const usersRef = ref(db, "users");
     onValue(usersRef, (usersSnap) => {
       const usersData = usersSnap.val() || {};
 
-      // Now load registered courses
       const regRef = ref(db, "registeredcourse");
       onValue(regRef, (snapshot) => {
         const data = snapshot.val();
@@ -57,50 +55,60 @@ const RegisteredCoursesTable = () => {
   );
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h2>Registered Courses</h2>
-      <input
-        type="text"
-        placeholder="Search by course or user"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        style={{ marginBottom: "10px", padding: "5px", width: "300px" }}
-      />
-      <table
-        border="1"
-        cellPadding="10"
-        style={{ borderCollapse: "collapse", width: "100%" }}
-      >
-        <thead style={{ backgroundColor: "#f0f0f0" }}>
-          <tr>
-            <th>Course Name</th>
-            <th>Username</th>
-            <th>User Email</th>
-            <th>User Location</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filtered.map((reg, index) => (
-            <tr key={index}>
-              <td>{reg.courseName}</td>
-              <td>{reg.username}</td>
-              <td>{reg.userEmail}</td>
-              <td>{reg.userLocation}</td>
-              <td>
-                <button
-                  style={{ color: "red" }}
-                  onClick={() =>
-                    handleDeleteRegistration(reg.courseName, reg.username)
-                  }
-                >
-                  Remove
-                </button>
-              </td>
+    <div className="registered-container">
+      <h2 className="section-title">Registered Courses</h2>
+
+      <div className="search-wrapper">
+        <input
+          className="search-input"
+          type="text"
+          placeholder="Search by course or user..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      </div>
+
+      <div className="table-wrapper">
+        <table className="styled-table">
+          <thead>
+            <tr>
+              <th>Course Name</th>
+              <th>Username</th>
+              <th>User Email</th>
+              <th>User Location</th>
+              <th>Action</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {filtered.map((reg, index) => (
+              <tr key={index}>
+                <td>{reg.courseName}</td>
+                <td>{reg.username}</td>
+                <td>{reg.userEmail}</td>
+                <td>{reg.userLocation}</td>
+                <td>
+                  <button
+                    className="remove-btn"
+                    onClick={() =>
+                      handleDeleteRegistration(reg.courseName, reg.username)
+                    }
+                  >
+                    Remove
+                  </button>
+                </td>
+              </tr>
+            ))}
+
+            {filtered.length === 0 && (
+              <tr>
+                <td colSpan="5" className="empty-msg">
+                  No matching records found.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
