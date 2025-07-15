@@ -1,4 +1,12 @@
+// src/App.js
 import React, { useState } from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+  NavLink,
+} from "react-router-dom";
 import {
   FaTachometerAlt,
   FaBook,
@@ -13,80 +21,151 @@ import RegisteredCoursesTable from "./components/RegisteredCoursesTable";
 import DarkModeToggle from "./components/DarkModeToggle";
 import DashboardOverview from "./components/DashboardOverview";
 import AddCourse from "./components/AddCourse";
-
+import LoginPage from "./pages/LoginPage";
+import ProtectedRoute from "./components/ProtectedRoute";
+import ModeratorDashboard from "./components/ModeratorDashboard";
+import { AuthProvider } from "./context/AuthContext";
 import "./App.css";
 
 const navItems = [
-  { id: "overview", label: "Dashboard", icon: <FaTachometerAlt /> },
-  { id: "courses", label: "Courses", icon: <FaBook /> },
-  { id: "users", label: "Users", icon: <FaUser /> },
-  { id: "registered", label: "Registered", icon: <FaClipboardList /> },
-  { id: "addcourse", label: "Add Course", icon: <FaPlus /> },
+  {
+    id: "overview",
+    label: "Dashboard",
+    icon: <FaTachometerAlt />,
+    path: "/dashboard",
+  },
+  { id: "courses", label: "Courses", icon: <FaBook />, path: "/courses" },
+  { id: "users", label: "Users", icon: <FaUser />, path: "/users" },
+  {
+    id: "registered",
+    label: "Registered",
+    icon: <FaClipboardList />,
+    path: "/registered",
+  },
+  {
+    id: "addcourse",
+    label: "Add Course",
+    icon: <FaPlus />,
+    path: "/addcourse",
+  },
 ];
 
 function App() {
   const [collapsed, setCollapsed] = useState(false);
 
   return (
-    <div className={`dashboard ${collapsed ? "collapsed" : ""}`}>
-      {/* Sidebar */}
-      <aside className="sidebar" aria-label="Sidebar Navigation">
-        <button
-          className="collapse-btn"
-          onClick={() => setCollapsed(!collapsed)}
-          aria-label="Toggle Sidebar"
-        >
-          {collapsed ? "➤" : "◀"}
-        </button>
+    <AuthProvider>
+      <Router>
+        <Routes>
+          {/* Public Route */}
+          <Route path="/login" element={<LoginPage />} />
 
-        {!collapsed && <h2 className="logo">SkillShare Admin</h2>}
+          {/* Redirect root to dashboard */}
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
-        <nav>
-          <ul>
-            {navItems.map(({ id, label, icon }) => (
-              <li key={id}>
-                <a href={`#${id}`} title={label}>
-                  {icon}
-                  {!collapsed && <span>{label}</span>}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </nav>
+          {/* Protected Admin Routes */}
+          <Route
+            path="/*"
+            element={
+              <ProtectedRoute adminOnly={true}>
+                <div className={`dashboard ${collapsed ? "collapsed" : ""}`}>
+                  {/* Sidebar */}
+                  <aside className="sidebar">
+                    <button
+                      className="collapse-btn"
+                      onClick={() => setCollapsed(!collapsed)}
+                    >
+                      {collapsed ? "➤" : "◀"}
+                    </button>
 
-        <div className="dark-mode-wrapper">
-          <DarkModeToggle />
-        </div>
-      </aside>
+                    {!collapsed && <h2 className="logo">SkillShare Admin</h2>}
 
-      {/* Main Content */}
-      <main className="main-content">
-        <h2>Add New Courses</h2>
-        <section id="addcourse" className="section section-card">
-          <AddCourse />
-        </section>
+                    <nav>
+                      <ul>
+                        {navItems.map(({ id, label, icon, path }) => (
+                          <li key={id}>
+                            <NavLink
+                              to={path}
+                              title={label}
+                              className={({ isActive }) =>
+                                isActive ? "active" : ""
+                              }
+                            >
+                              {icon}
+                              {!collapsed && <span>{label}</span>}
+                            </NavLink>
+                          </li>
+                        ))}
+                      </ul>
+                    </nav>
 
-        <section id="courses" className="section section-card">
-          {/* <h2>Courses</h2> */}
-          <CoursesTable />
-        </section>
+                    <div className="dark-mode-wrapper">
+                      <DarkModeToggle />
+                    </div>
+                  </aside>
 
-        <section id="users" className="section section-card">
-          {/* <h2>Users</h2> */}
-          <UsersTable />
-        </section>
-
-        <section id="registered" className="section section-card">
-          {/* <h2>Registered Courses</h2> */}
-          <RegisteredCoursesTable />
-        </section>
-
-        <section id="overview" className="section section-card full-width-graph">
-          {/* <h2>Analytics & Insights</h2> */}
-          <DashboardOverview />
-        </section>
-      </main>
-    </div>
+                  {/* Main Content */}
+                  <main className="main-content">
+                    <Routes>
+                      <Route
+                        path="/dashboard"
+                        element={
+                          <section className="section section-card full-width-graph">
+                            <DashboardOverview />
+                          </section>
+                        }
+                      />
+                      <Route
+                        path="/courses"
+                        element={
+                          <section className="section section-card">
+                            <CoursesTable />
+                          </section>
+                        }
+                      />
+                      <Route
+                        path="/users"
+                        element={
+                          <section className="section section-card">
+                            <UsersTable />
+                          </section>
+                        }
+                      />
+                      <Route
+                        path="/registered"
+                        element={
+                          <section className="section section-card">
+                            <RegisteredCoursesTable />
+                          </section>
+                        }
+                      />
+                      <Route
+                        path="/addcourse"
+                        element={
+                          <section className="section section-card">
+                            <AddCourse />
+                          </section>
+                        }
+                      />
+                      {/* Fallback Route */}
+                      <Route path="*" element={<Navigate to="/dashboard" />} />
+                      <Route
+                        path="/moderator"
+                        element={
+                          <section className="section section-card">
+                            <ModeratorDashboard />
+                          </section>
+                        }
+                      />
+                    </Routes>
+                  </main>
+                </div>
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
 }
 
