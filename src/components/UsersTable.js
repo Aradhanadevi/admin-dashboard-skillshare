@@ -1,22 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { getDatabase, ref, onValue, set, remove } from "firebase/database";
+import { getDatabase, ref, onValue, remove } from "firebase/database";
+import { useNavigate } from "react-router-dom";
 
 const UsersTable = () => {
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState("");
-  const [formData, setFormData] = useState({
-    username: "",
-    email: "",
-    name: "",
-    password: "",
-    location: "",
-    skills: "",
-    skilloffered: "",
-    skillrequested: "",
-    favourites: "",
-  });
   const [currentPage, setCurrentPage] = useState(1);
+  const [expandedFavourites, setExpandedFavourites] = useState({});
   const pageSize = 5;
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const db = getDatabase();
@@ -48,73 +41,85 @@ const UsersTable = () => {
       .catch((err) => console.error(err));
   };
 
-  const filtered = users.filter(
-    (user) =>
-      user.username?.toLowerCase().includes(search.toLowerCase()) ||
-      user.email?.toLowerCase().includes(search.toLowerCase()) ||
-      user.name?.toLowerCase().includes(search.toLowerCase())
-  );
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
+  const toggleExpandFavourites = (username) => {
+    setExpandedFavourites((prev) => ({
       ...prev,
-      [name]: value,
+      [username]: !prev[username],
     }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const renderFavouritesCell = (user) => {
+    const text = user.favourites
+      ? Object.keys(user.favourites).join(", ")
+      : "-";
 
-    if (!formData.username || !formData.email) {
-      alert("Username and email are required.");
-      return;
+    if (text === "-") return "-";
+
+    if (expandedFavourites[user.username]) {
+      return (
+        <div style={{ whiteSpace: "normal" }}>
+          {text}
+          <button
+            onClick={() => toggleExpandFavourites(user.username)}
+            style={{
+              border: "none",
+              background: "transparent",
+              color: "#3498db",
+              cursor: "pointer",
+              marginLeft: "6px",
+            }}
+          >
+            Read Less
+          </button>
+        </div>
+      );
     }
 
-    const db = getDatabase();
-    const userRef = ref(db, `users/${formData.username}`);
-
-    let favouritesObj = {};
-    if (formData.favourites) {
-      const favs = formData.favourites.split(",").map((f) => f.trim());
-      favouritesObj = favs.reduce((acc, fav) => {
-        if (fav) acc[fav] = true;
-        return acc;
-      }, {});
-    }
-
-    const payload = {
-      username: formData.username,
-      email: formData.email,
-      name: formData.name,
-      password: formData.password,
-      location: formData.location,
-      skills: formData.skills,
-      skilloffered: formData.skilloffered,
-      skillrequested: formData.skillrequested,
-      favourites: favouritesObj,
-    };
-
-    set(userRef, payload)
-      .then(() => {
-        alert("User saved successfully!");
-        setFormData({
-          username: "",
-          email: "",
-          name: "",
-          password: "",
-          location: "",
-          skills: "",
-          skilloffered: "",
-          skillrequested: "",
-          favourites: "",
-        });
-      })
-      .catch((err) => {
-        console.error(err);
-        alert("Error saving user.");
-      });
+    return (
+      <div
+        style={{
+          display: "-webkit-box",
+          WebkitLineClamp: 3,
+          WebkitBoxOrient: "vertical",
+          overflow: "hidden",
+          whiteSpace: "normal",
+          maxWidth: "300px",
+        }}
+      >
+        {text}
+        {text.length > 60 && (
+          <button
+            onClick={() => toggleExpandFavourites(user.username)}
+            style={{
+              border: "none",
+              background: "transparent",
+              color: "#3498db",
+              cursor: "pointer",
+              marginLeft: "6px",
+            }}
+          >
+            Read More
+          </button>
+        )}
+      </div>
+    );
   };
+
+  const filtered = users.filter((user) => {
+    const term = search.toLowerCase();
+    return (
+      user.username?.toLowerCase().includes(term) ||
+      user.email?.toLowerCase().includes(term) ||
+      user.name?.toLowerCase().includes(term) ||
+      user.location?.toLowerCase().includes(term) ||
+      user.skills?.toLowerCase().includes(term) ||
+      user.skilloffered?.toLowerCase().includes(term) ||
+      user.skillrequested?.toLowerCase().includes(term) ||
+      Object.keys(user.favourites || {}).some((fav) =>
+        fav.toLowerCase().includes(term)
+      )
+    );
+  });
 
   const totalPages = Math.ceil(filtered.length / pageSize);
   const paginatedUsers = filtered.slice(
@@ -131,103 +136,95 @@ const UsersTable = () => {
   };
 
   return (
-    <div className="users-container">
-      <h2 className="section-title">Users</h2>
+    <div className="users-container" style={{ padding: "20px" }}>
+      <h2 className="section-title" style={{ marginBottom: "20px" }}>
+        Users
+      </h2>
 
-      <div className="search-wrapper">
-        <input
-          className="search-input"
-          type="text"
-          placeholder="Search users..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
+      {/* Search Bar */}
+      <div
+        style={{
+          marginBottom: "20px",
+          display: "flex",
+          justifyContent: "center",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            border: "1px solid #ccc",
+            borderRadius: "8px",
+            padding: "6px 10px",
+            width: "300px",
+            background: "#f9f9f9",
+          }}
+        >
+          <span style={{ marginRight: "8px", color: "#666" }}></span>
+          <input
+            type="text"
+            placeholder="Search users..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            style={{
+              border: "none",
+              background: "transparent",
+              width: "100%",
+              outline: "none",
+              fontSize: "16px",
+            }}
+          />
+          {search && (
+            <button
+              onClick={() => setSearch("")}
+              style={{
+                border: "none",
+                background: "transparent",
+                color: "#999",
+                cursor: "pointer",
+                fontSize: "16px",
+                marginLeft: "4px",
+              }}
+            >
+              ✕
+            </button>
+          )}
+        </div>
       </div>
 
-      <form className="form-container" onSubmit={handleSubmit}>
-        <input
-          className="form-input"
-          type="text"
-          name="username"
-          placeholder="Username"
-          value={formData.username}
-          onChange={handleChange}
-          required
-        />
-        <input
-          className="form-input"
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={formData.email}
-          onChange={handleChange}
-          required
-        />
-        <input
-          className="form-input"
-          type="text"
-          name="name"
-          placeholder="Name"
-          value={formData.name}
-          onChange={handleChange}
-        />
-        <input
-          className="form-input"
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={formData.password}
-          onChange={handleChange}
-        />
-        <input
-          className="form-input"
-          type="text"
-          name="location"
-          placeholder="Location"
-          value={formData.location}
-          onChange={handleChange}
-        />
-        <input
-          className="form-input"
-          type="text"
-          name="skills"
-          placeholder="Skills (comma separated)"
-          value={formData.skills}
-          onChange={handleChange}
-        />
-        <input
-          className="form-input"
-          type="text"
-          name="skilloffered"
-          placeholder="Skill Offered"
-          value={formData.skilloffered}
-          onChange={handleChange}
-        />
-        <input
-          className="form-input"
-          type="text"
-          name="skillrequested"
-          placeholder="Skill Requested"
-          value={formData.skillrequested}
-          onChange={handleChange}
-        />
-        <input
-          className="form-input"
-          type="text"
-          name="favourites"
-          placeholder="Favourites (comma separated)"
-          value={formData.favourites}
-          onChange={handleChange}
-        />
-        <button className="form-button" type="submit">
-          Add User
-        </button>
-      </form>
+      <button
+        className="form-button"
+        onClick={() => navigate("/users/add")}
+        style={{
+          marginBottom: "20px",
+          padding: "8px 16px",
+          background: "#3498db",
+          color: "#fff",
+          border: "none",
+          borderRadius: "4px",
+          cursor: "pointer",
+        }}
+      >
+        + Add User
+      </button>
 
-      <div className="table-wrapper">
-        <table className="styled-table">
+      <div
+        className="table-wrapper"
+        style={{
+          marginTop: "30px",
+          overflowX: "auto",
+        }}
+      >
+        <table
+          className="styled-table"
+          style={{
+            width: "100%",
+            minWidth: "1000px",
+            borderCollapse: "collapse",
+          }}
+        >
           <thead>
-            <tr>
+            <tr style={{ background: "#f1f1f1" }}>
               <th>Username</th>
               <th>Email</th>
               <th>Name</th>
@@ -249,15 +246,19 @@ const UsersTable = () => {
                 <td>{user.skills || "-"}</td>
                 <td>{user.skilloffered || "-"}</td>
                 <td>{user.skillrequested || "-"}</td>
-                {/* <td>
-                  {user.favourites
-                    ? Object.keys(user.favourites).join(", ")
-                    : "-"}
-                </td> */}
+                <td>{renderFavouritesCell(user)}</td>
                 <td>
                   <button
                     className="remove-btn"
                     onClick={() => handleDeleteUser(user.username)}
+                    style={{
+                      background: "#e74c3c",
+                      border: "none",
+                      color: "#fff",
+                      padding: "6px 12px",
+                      borderRadius: "4px",
+                      cursor: "pointer",
+                    }}
                   >
                     Remove
                   </button>
@@ -267,7 +268,14 @@ const UsersTable = () => {
 
             {paginatedUsers.length === 0 && (
               <tr>
-                <td colSpan="9" className="empty-msg">
+                <td
+                  colSpan="9"
+                  className="empty-msg"
+                  style={{
+                    textAlign: "center",
+                    padding: "20px",
+                  }}
+                >
                   No users found.
                 </td>
               </tr>
@@ -277,7 +285,15 @@ const UsersTable = () => {
 
         {/* Pagination controls */}
         {filtered.length > pageSize && (
-          <div className="pagination-controls">
+          <div
+            className="pagination-controls"
+            style={{
+              marginTop: "20px",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
             <button
               onClick={handlePrev}
               disabled={currentPage === 1}
@@ -291,7 +307,7 @@ const UsersTable = () => {
             >
               Prev
             </button>
-            <span>
+            <span style={{ margin: "0 10px" }}>
               Page {currentPage} of {totalPages}
             </span>
             <button

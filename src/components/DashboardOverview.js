@@ -133,7 +133,7 @@ const DashboardPage = () => {
 
       const catCounts = {};
       coursesArray.forEach((course) => {
-        const cat = course.category || "Unknown";
+        const cat = course.Category || "Unknown";
         catCounts[cat] = (catCounts[cat] || 0) + 1;
       });
       setCourseCategoryCounts(catCounts);
@@ -257,7 +257,7 @@ const DashboardPage = () => {
       {
         label: "Total Count",
         data: [totals.courses, totals.users, totals.registeredCourses],
-        backgroundColor: ["#9ca3af", "#d1d5db", "#6b7280"],
+        backgroundColor: ["#CFA0EBFF", "#91BAF8FF", "#F7EE99FF"],
         borderRadius: 6,
       },
     ],

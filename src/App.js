@@ -1,4 +1,5 @@
 // src/App.js
+
 import React, { useState } from "react";
 import {
   BrowserRouter as Router,
@@ -17,6 +18,7 @@ import {
 
 import CoursesTable from "./components/CoursesTable";
 import UsersTable from "./components/UsersTable";
+import AddUserForm from "./components/AddUserForm";
 import RegisteredCoursesTable from "./components/RegisteredCoursesTable";
 import DarkModeToggle from "./components/DarkModeToggle";
 import DashboardOverview from "./components/DashboardOverview";
@@ -48,6 +50,13 @@ const navItems = [
     icon: <FaPlus />,
     path: "/addcourse",
   },
+  // Optional: Add User link in the sidebar
+  {
+    id: "adduser",
+    label: "Add User",
+    icon: <FaPlus />,
+    path: "/users/add",
+  },
 ];
 
 function App() {
@@ -78,7 +87,9 @@ function App() {
                       {collapsed ? "➤" : "◀"}
                     </button>
 
-                    {!collapsed && <h2 className="logo">SkillShare Admin</h2>}
+                    {!collapsed && (
+                      <h2 className="logo">SkillShare Admin</h2>
+                    )}
 
                     <nav>
                       <ul>
@@ -132,6 +143,14 @@ function App() {
                         }
                       />
                       <Route
+                        path="/users/add"
+                        element={
+                          <section className="section section-card">
+                            <AddUserForm />
+                          </section>
+                        }
+                      />
+                      <Route
                         path="/registered"
                         element={
                           <section className="section section-card">
@@ -147,8 +166,6 @@ function App() {
                           </section>
                         }
                       />
-                      {/* Fallback Route */}
-                      <Route path="*" element={<Navigate to="/dashboard" />} />
                       <Route
                         path="/moderator"
                         element={
@@ -157,6 +174,8 @@ function App() {
                           </section>
                         }
                       />
+                      {/* Fallback Route */}
+                      <Route path="*" element={<Navigate to="/dashboard" />} />
                     </Routes>
                   </main>
                 </div>
