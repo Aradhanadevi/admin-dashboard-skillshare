@@ -19,7 +19,7 @@ import { Bar, Line, Radar, Pie } from "react-chartjs-2";
 
 import "chartjs-adapter-date-fns";
 import { getDatabase, ref, onValue } from "firebase/database";
-
+// This is necessary to ensure the date adapter works correctly
 ChartJS.register(
   CategoryScale,
   LinearScale,
