@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getDatabase, ref, onValue, remove } from "firebase/database";
 import { FaTrashAlt } from "react-icons/fa";
-// Import the necessary Firebase functions and React icons
+
 const CoursesTable = () => {
   const [courses, setCourses] = useState([]);
   const [search, setSearch] = useState("");
