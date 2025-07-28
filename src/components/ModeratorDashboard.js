@@ -1,122 +1,143 @@
 import React, { useEffect, useState } from "react";
-import { database } from "../firebase";
-import { ref, get } from "firebase/database";
-import {
-  FaHome,
-  FaClipboardCheck,
-  FaFlag,
-  FaChartBar,
-  FaBell,
-} from "react-icons/fa";
-
-const Sidebar = () => (
-  <div className="w-64 bg-white border-r h-screen p-6 text-sm">
-    <h2 className="text-lg font-bold mb-6">Moderator Panel</h2>
-    <ul className="space-y-4 text-gray-700">
-      <li className="flex items-center gap-2 font-medium text-black">
-        <FaHome /> Dashboard
-      </li>
-      <li className="flex items-center gap-2 hover:text-black cursor-pointer">
-        <FaClipboardCheck /> Pending Approvals
-      </li>
-      <li className="flex items-center gap-2 hover:text-black cursor-pointer">
-        <FaFlag /> Reported Content
-      </li>
-      <li className="flex items-center gap-2 hover:text-black cursor-pointer">
-        <FaChartBar /> Analytics
-      </li>
-      <li className="flex items-center gap-2 hover:text-black cursor-pointer">
-        <FaBell /> Notifications
-      </li>
-    </ul>
-  </div>
-);
+import { getDatabase, ref, get, update } from "firebase/database";
+import { app } from "../firebase";
 
 const ModeratorDashboard = () => {
-  const [courses, setCourses] = useState([]);
+  const [unapprovedCourses, setUnapprovedCourses] = useState([]);
+  const [approvedCourses, setApprovedCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchCourses = async () => {
-      const snapshot = await get(ref(database, "courses"));
-      if (snapshot.exists()) {
-        const data = snapshot.val();
-        const courseList = Object.keys(data).map((key) => ({
-          ...data[key],
-          key,
-        }));
-        setCourses(courseList);
-      }
-    };
-    fetchCourses();
-  }, []);
+  const fetchCourses = async () => {
+    setLoading(true);
+    const db = getDatabase(app);
+    const coursesRef = ref(db, "courses");
 
-  return (
-    <div className="flex bg-gray-50 min-h-screen">
-      <Sidebar />
-      <div className="flex-1 p-8">
-        <h1 className="text-3xl font-semibold mb-6">Dashboard</h1>
+  try {
+    const snapshot = await get(coursesRef);
+    if (snapshot.exists()) {
+      const data = snapshot.val();
+      const unapproved = [];
+      const approved = [];
 
-        {/* Overview Cards */}
-        <div className="grid grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-lg shadow-sm p-5">
-            <p className="text-gray-500 mb-1">Pending Approvals</p>
-            <h2 className="text-2xl font-bold">{courses.length}</h2>
-          </div>
-          <div className="bg-white rounded-lg shadow-sm p-5">
-            <p className="text-gray-500 mb-1">Reported Content</p>
-            <h2 className="text-2xl font-bold">5</h2>
-          </div>
-          <div className="bg-white rounded-lg shadow-sm p-5">
-            <p className="text-gray-500 mb-1">Resolved Reports</p>
-            <h2 className="text-2xl font-bold">20</h2>
-          </div>
-        </div>
+      Object.entries(data).forEach(([courseName, courseData]) => {
+        const isApproved = courseData.approved === true;
+        const fullCourse = { courseName, ...courseData };
+        if (isApproved) {
+          approved.push(fullCourse);
+        } else {
+          unapproved.push(fullCourse);
+        }
+      });
 
-        {/* Course Approval Section */}
-        <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
-          <h2 className="text-xl font-semibold mb-4">Pending Course Approvals</h2>
+      setApprovedCourses(approved);
+      setUnapprovedCourses(unapproved);
+    } else {
+      setApprovedCourses([]);
+      setUnapprovedCourses([]);
+    }
+  } catch (error) {
+    console.error("Error fetching courses:", error);
+  }
 
-          <input
-            type="text"
-            placeholder="🔍 Search courses"
-            className="w-full mb-4 px-4 py-2 border rounded-md bg-gray-100 text-sm"
-          />
+  setLoading(false);
+};
 
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="text-left text-gray-500 border-b">
-                <th className="py-2">Course Title</th>
-                <th>Instructor</th>
-                <th>Submitted Date</th>
-                <th className="text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {courses.map((course, idx) => (
-                <tr key={idx} className="border-b last:border-none hover:bg-gray-50">
-                  <td className="py-3">{course.courseName}</td>
-                  <td>{course.Tutor}</td>
-                  <td>2025-07-15</td>
-                  <td className="text-right text-blue-600 font-medium">
-                    <span className="cursor-pointer hover:underline">Approve</span> /{" "}
-                    <span className="cursor-pointer hover:underline text-red-500">Reject</span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+const handleStatusChange = async (courseName, approved) => {
+  const db = getDatabase(app);
+  const courseRef = ref(db, `courses/${courseName}`);
+  try {
+    await update(courseRef, { approved });
+    fetchCourses(); // refresh
+  } catch (error) {
+    console.error("Error updating course:", error);
+  }
+};
 
-        {/* Reported Content Placeholder */}
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <h2 className="text-xl font-semibold mb-4">Reported Content Review</h2>
-          <p className="text-gray-500 text-sm italic">
-            Reported content integration coming soon…
-          </p>
-        </div>
-      </div>
-    </div>
-  );
+useEffect(() => {
+  fetchCourses();
+}, []);
+
+return (
+  <div style={{ padding: "20px", maxWidth: "900px", margin: "0 auto" }}>
+    <h1 style={{ fontSize: "26px", marginBottom: "20px", textAlign: "center" }}>Moderator Dashboard</h1>
+
+    {loading ? (
+      <p style={{ textAlign: "center" }}>⏳ Loading or no data found.</p>
+    ) : (
+      <>
+        <h2 style={{ marginTop: "30px", fontSize: "22px", borderBottom: "2px solid #ccc" }}>🚫 Unapproved Courses</h2>
+        {unapprovedCourses.length === 0 ? (
+          <p>No unapproved courses found.</p>
+        ) : (
+          unapprovedCourses.map((course, index) => (
+            <div key={index} style={styles.card}>
+              <h3 style={styles.title}>{course.courseName}</h3>
+              <p><strong>Category:</strong> {course.Category}</p>
+              <p><strong>Language:</strong> {course.language}</p>
+              <p><strong>Tutor:</strong> {course.Tutor}</p>
+              <p><strong>Description:</strong> {course.Description}</p>
+              <div style={styles.btnGroup}>
+                <button onClick={() => handleStatusChange(course.courseName, true)} style={styles.approve}>Approve</button>
+              </div>
+            </div>
+          ))
+        )}
+
+        <h2 style={{ marginTop: "30px", fontSize: "22px", borderBottom: "2px solid #ccc" }}>✅ Approved Courses</h2>
+        {approvedCourses.length === 0 ? (
+          <p>No approved courses found.</p>
+        ) : (
+          approvedCourses.map((course, index) => (
+            <div key={index} style={styles.card}>
+              <h3 style={styles.title}>{course.courseName}</h3>
+              <p><strong>Category:</strong> {course.Category}</p>
+              <p><strong>Language:</strong> {course.language}</p>
+              <p><strong>Tutor:</strong> {course.Tutor}</p>
+              <p><strong>Description:</strong> {course.Description}</p>
+              <div style={styles.btnGroup}>
+                <button onClick={() => handleStatusChange(course.courseName, false)} style={styles.disapprove}>Disapprove</button>
+              </div>
+            </div>
+          ))
+        )}
+      </>
+    )}
+  </div>
+);
+};
+
+const styles = {
+  card: {
+    border: "1px solid #ccc",
+    borderRadius: "8px",
+    padding: "15px",
+    margin: "15px 0",
+    backgroundColor: "#f9f9f9"
+  },
+  title: {
+    margin: "0 0 10px 0",
+    fontSize: "18px",
+    color: "#333"
+  },
+  btnGroup: {
+    marginTop: "10px"
+  },
+  approve: {
+    backgroundColor: "#4CAF50",
+    color: "#fff",
+    border: "none",
+    padding: "8px 14px",
+    cursor: "pointer",
+    borderRadius: "4px"
+  },
+  disapprove: {
+    backgroundColor: "#f44336",
+    color: "#fff",
+    border: "none",
+    padding: "8px 14px",
+    cursor: "pointer",
+    borderRadius: "4px"
+  }
 };
 
 export default ModeratorDashboard;
