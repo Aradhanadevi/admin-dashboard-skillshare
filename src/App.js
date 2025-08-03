@@ -239,7 +239,20 @@ function App() {
       <Router>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route
+            path="/"
+            element={
+              <Navigate
+                to={
+                  JSON.parse(localStorage.getItem("user"))?.role === "admin"
+                    ? "/dashboard"
+                    : "/moderator"
+                }
+                replace
+              />
+            }
+          />
+
           <Route
             path="/*"
             element={
