@@ -1,39 +1,39 @@
+// src/context/AuthContext.js
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { getDatabase, ref, onValue } from "firebase/database";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [admin, setAdmin] = useState(false);
-  const [moderator, setModerator] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null); // { email, role }
 
-  useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem("user"));
-    if (stored && stored.email) {
-      setUser({ email: stored.email });
-      setAdmin(stored.role === "admin");
-      setModerator(stored.role === "moderator");
-    }
-    setLoading(false);
-  }, []);
-
-  const login = (email, role) => {
-    localStorage.setItem("user", JSON.stringify({ email, role }));
-    setUser({ email });
-    setAdmin(role === "admin");
-    setModerator(role === "moderator");
+  const login = (email) => {
+    const formattedEmail = email.replace(/\./g, "_").replace(/@/g, "_");
+    const db = getDatabase();
+    const userRef = ref(db, `users/${formattedEmail}`);
+    onValue(userRef, (snapshot) => {
+      const userData = snapshot.val();
+      if (userData) {
+        setUser({ email, role: userData.role });
+        localStorage.setItem("user", JSON.stringify({ email, role: userData.role }));
+      }
+    });
   };
 
   const logout = () => {
-    localStorage.removeItem("user");
     setUser(null);
-    setAdmin(false);
-    setModerator(false);
+    localStorage.removeItem("user");
   };
 
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
+
   return (
-    <AuthContext.Provider value={{ user, admin, moderator, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
