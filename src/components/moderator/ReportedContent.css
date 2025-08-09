@@ -1,0 +1,50 @@
+.reported-content {
+  padding: 2rem;
+  font-family: "Segoe UI", sans-serif;
+  background-color: #f9f9f9;
+  min-height: 100vh;
+}
+
+.reported-content h2 {
+  font-size: 1.8rem;
+  margin-bottom: 1.2rem;
+  text-align: center;
+  color: #333;
+}
+
+.empty {
+  text-align: center;
+  color: #777;
+  font-style: italic;
+  margin-top: 2rem;
+}
+
+.reported-table {
+  overflow-x: auto;
+  margin-top: 1rem;
+}
+
+.reported-table table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+  border: 1px solid #ddd;
+}
+
+.reported-table th,
+.reported-table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+  font-size: 0.95rem;
+  color: #111;
+}
+
+.reported-table th {
+  background-color: #f0f0f0;
+  font-weight: 600;
+}
+
+.reported-table tr:hover {
+  background-color: #f7f7f7;
+}
