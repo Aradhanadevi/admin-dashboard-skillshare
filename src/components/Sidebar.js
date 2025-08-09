@@ -2,9 +2,9 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 import DarkModeToggle from "./DarkModeToggle";
+import "./Sidebar.css";
 
 const Sidebar = ({ collapsed, setCollapsed, navItems = [], role }) => {
-
   return (
     <aside className="sidebar">
       <button className="collapse-btn" onClick={() => setCollapsed(!collapsed)}>
@@ -20,7 +20,6 @@ const Sidebar = ({ collapsed, setCollapsed, navItems = [], role }) => {
       <nav>
         <ul>
           {(navItems || []).map(({ id, label, icon, path }) => (
-
             <li key={id}>
               <NavLink
                 to={path}
@@ -36,7 +35,7 @@ const Sidebar = ({ collapsed, setCollapsed, navItems = [], role }) => {
       </nav>
 
       <div className="dark-mode-wrapper">
-        <DarkModeToggle />
+        <DarkModeToggle collapsed={collapsed} />
       </div>
     </aside>
   );

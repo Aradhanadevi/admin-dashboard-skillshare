@@ -1,44 +1,62 @@
 import React, { useEffect, useState } from "react";
 import { ref, onValue } from "firebase/database";
-import { database } from "../firebase"; // Adjust path if needed
+import { database } from "../firebase"; // Adjust if needed
 import "./ModeratorDashboard.css";
 
 const ModeratorDashboard = () => {
-  const [pendingCourses, setPendingCourses] = useState(0);
-  const [pendingTutors, setPendingTutors] = useState(0);
+  const [courseApprovalCount, setCourseApprovalCount] = useState(0);
+  const [tutorRequestsCount, setTutorRequestsCount] = useState(0);
+  const [flaggedCoursesCount, setFlaggedCoursesCount] = useState(0);
+  const [reportedUsersCount, setReportedUsersCount] = useState(0);
+  const [systemMessagesCount, setSystemMessagesCount] = useState(0);
 
   useEffect(() => {
     const coursesRef = ref(database, "courses");
     const usersRef = ref(database, "users");
 
-    // Fetch pending courses
+    // Fetch course data
     onValue(coursesRef, (snapshot) => {
-      let count = 0;
+      let courseApproval = 0;
+      let flagged = 0;
+
       snapshot.forEach((child) => {
         const course = child.val();
-        if (course.status === "pending") count++;
+        if (!course.approved) courseApproval++;
+        if (course.flagged) flagged++;
       });
-      setPendingCourses(count);
+
+      setCourseApprovalCount(courseApproval);
+      setFlaggedCoursesCount(flagged);
     });
 
-    // Fetch pending tutor requests
+    // Fetch user data
     onValue(usersRef, (snapshot) => {
-      let count = 0;
+      let tutorReqs = 0;
+      let reported = 0;
+      let systemMsgs = 0;
+
       snapshot.forEach((child) => {
         const user = child.val();
-        if (user.roleRequest === "tutor" && user.role !== "tutor") count++;
+        if (user.wanttutorrights && !user.approvedTutor) tutorReqs++;
+        if (user.reported) reported++;
+        if (user.systemMessages && Array.isArray(user.systemMessages)) {
+          systemMsgs += user.systemMessages.length;
+        }
       });
-      setPendingTutors(count);
+
+      setTutorRequestsCount(tutorReqs);
+      setReportedUsersCount(reported);
+      setSystemMessagesCount(systemMsgs);
     });
   }, []);
 
   const tiles = [
-    { title: "Course Approval", count: pendingCourses, link: "/moderator/courses" },
-    { title: "Tutor Requests", count: pendingTutors, link: "/moderator/tutor-approval" },
-    { title: "Flagged Courses", count: 3, link: "/moderator/flagged-courses" },
-    { title: "Reported Users", count: 1, link: "/moderator/reported-users" },
+    { title: "Course Approval", count: courseApprovalCount, link: "/moderator/courses" },
+    { title: "Tutor Requests", count: tutorRequestsCount, link: "/moderator/tutor-approval" },
+    { title: "Flagged Courses", count: flaggedCoursesCount, link: "/moderator/flagged-users" },
+    { title: "Reported Users", count: reportedUsersCount, link: "/moderator/reported-content" },
     { title: "Platform Stats", count: "-", link: "/moderator/stats" },
-    { title: "System Messages", count: 0, link: "/moderator/messages" }
+    { title: "System Messages", count: systemMessagesCount, link: "/moderator/messages" }
   ];
 
   return (

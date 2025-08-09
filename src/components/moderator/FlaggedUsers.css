@@ -1,0 +1,43 @@
+.flagged-users {
+  padding: 2rem;
+  font-family: "Segoe UI", sans-serif;
+  background-color: #f9f9f9;
+  min-height: 100vh;
+}
+
+.flagged-users h2 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  text-align: center;
+  color: #333;
+}
+
+.flagged-table {
+  margin-top: 1.5rem;
+  overflow-x: auto;
+}
+
+.flagged-table table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+}
+
+.flagged-table th,
+.flagged-table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+  color: #111;
+  font-size: 0.95rem;
+}
+
+.flagged-table th {
+  background-color: #f0f0f0;
+  font-weight: 600;
+}
+
+.flagged-table tr:hover {
+  background-color: #f7f7f7;
+}
