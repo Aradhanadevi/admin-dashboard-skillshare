@@ -35,6 +35,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import ModeratorDashboard from "./components/ModeratorDashboard";
 
 import "./App.css";
+import AddQuiz from "./components/AddQuiz";
 
 const AppLayout = () => {
   const [collapsed, setCollapsed] = useState(false);
@@ -52,6 +53,13 @@ const AppLayout = () => {
     },
     { id: "courses", label: "Courses", icon: <FaBook />, path: "/courses" },
     { id: "users", label: "Users", icon: <FaUser />, path: "/users" },
+    {
+      id: "addquiz",
+      label: "Add Quiz",
+      icon: <FaPlus />,
+      path: "/addquiz",
+    },
+
     {
       id: "registered",
       label: "Registered",
@@ -152,6 +160,15 @@ const AppLayout = () => {
                 </section>
               }
             />
+            <Route
+              path="/addquiz"
+              element={
+                <section className="section section-card">
+                  <AddQuiz/>
+                </section>
+              }
+            />
+
             <Route
               path="/users/add"
               element={
