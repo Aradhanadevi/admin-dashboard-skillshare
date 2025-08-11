@@ -1,4 +1,3 @@
-// src/App.js
 import { useAuth, AuthProvider } from "./context/AuthContext";
 import React, { useState } from "react";
 import {
