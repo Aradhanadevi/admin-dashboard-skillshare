@@ -37,11 +37,15 @@ import "./App.css";
 import AddQuiz from "./components/AddQuiz";
 
 const AppLayout = () => {
-  const [collapsed, setCollapsed] = useState(false);
   const { user } = useAuth();
+  const [collapsed, setCollapsed] = useState(false);
 
-  const isAdmin = user?.role === "admin";
-  const isModerator = user?.role === "moderator";
+  // Get role from AuthContext or from localStorage if page reloads
+  const storedAuth = JSON.parse(localStorage.getItem("auth"));
+  const role = user?.role || storedAuth?.role || "user";
+
+  const isAdmin = role === "admin";
+  const isModerator = role === "moderator";
 
   const adminNavItems = [
     {
@@ -52,13 +56,7 @@ const AppLayout = () => {
     },
     { id: "courses", label: "Courses", icon: <FaBook />, path: "/courses" },
     { id: "users", label: "Users", icon: <FaUser />, path: "/users" },
-    {
-      id: "addquiz",
-      label: "Add Quiz",
-      icon: <FaPlus />,
-      path: "/addquiz",
-    },
-
+    { id: "addquiz", label: "Add Quiz", icon: <FaPlus />, path: "/addquiz" },
     {
       id: "registered",
       label: "Registered",
@@ -71,12 +69,7 @@ const AppLayout = () => {
       icon: <FaPlus />,
       path: "/addcourse",
     },
-    {
-      id: "adduser",
-      label: "Add User",
-      icon: <FaPlus />,
-      path: "/users/add",
-    },
+    { id: "adduser", label: "Add User", icon: <FaPlus />, path: "/users/add" },
   ];
 
   const moderatorNavItems = [
@@ -111,14 +104,13 @@ const AppLayout = () => {
       path: "/moderator/reported-content",
     },
   ];
-  // if (!user) return null; // or a loading spinner
-  const fallbackRole = user?.role || "moderator"; // Default role if user is undefined
-  const navItems =
-    fallbackRole === "admin"
-      ? adminNavItems
-      : fallbackRole === "moderator"
-      ? moderatorNavItems
-      : [];
+
+  // Decide sidebar items
+  const navItems = isAdmin
+    ? adminNavItems
+    : isModerator
+    ? moderatorNavItems
+    : [];
 
   return (
     <div className={`dashboard ${collapsed ? "collapsed" : ""}`}>
@@ -163,7 +155,7 @@ const AppLayout = () => {
               path="/addquiz"
               element={
                 <section className="section section-card">
-                  <AddQuiz/>
+                  <AddQuiz />
                 </section>
               }
             />
@@ -260,7 +252,7 @@ function App() {
             element={
               <Navigate
                 to={
-                  JSON.parse(localStorage.getItem("user"))?.role === "admin"
+                  JSON.parse(localStorage.getItem("auth"))?.role === "admin"
                     ? "/dashboard"
                     : "/moderator"
                 }
