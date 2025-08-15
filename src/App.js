@@ -41,6 +41,7 @@ const AppLayout = () => {
   const [collapsed, setCollapsed] = useState(false);
 
   // Get role from AuthContext or from localStorage if page reloads
+  //RemoveLocalStorage.getItem("auth") in production
   const storedAuth = JSON.parse(localStorage.getItem("auth"));
   const role = user?.role || storedAuth?.role || "user";
 
@@ -250,14 +251,18 @@ function App() {
           <Route
             path="/"
             element={
-              <Navigate
-                to={
-                  JSON.parse(localStorage.getItem("auth"))?.role === "admin"
-                    ? "/dashboard"
-                    : "/moderator"
-                }
-                replace
-              />
+              localStorage.getItem("auth") ? (
+                <Navigate
+                  to={
+                    JSON.parse(localStorage.getItem("auth"))?.role === "admin"
+                      ? "/dashboard"
+                      : "/moderator"
+                  }
+                  replace
+                />
+              ) : (
+                <Navigate to="/login" replace />
+              )
             }
           />
 
