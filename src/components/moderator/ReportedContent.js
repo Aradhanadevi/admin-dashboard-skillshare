@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ref, onValue } from "firebase/database";
+import { ref, onValue, update } from "firebase/database";
 import { database } from "./../../firebase";
 import "./ReportedContent.css";
 
@@ -7,17 +7,25 @@ const ReportedContent = () => {
   const [reports, setReports] = useState([]);
 
   useEffect(() => {
-    const reportsRef = ref(database, "reports"); // adjust path if needed
+    const coursesRef = ref(database, "courses");
 
-    const unsubscribe = onValue(reportsRef, (snapshot) => {
+    const unsubscribe = onValue(coursesRef, (snapshot) => {
       const data = snapshot.val();
       const reportList = [];
 
-      for (let id in data) {
-        reportList.push({
-          id,
-          ...data[id],
-        });
+      for (let courseId in data) {
+        const course = data[courseId];
+        if (course.reports) {
+          reportList.push({
+            id: courseId,
+            name: course.courseName,
+            reportCount: course.reports.reportCount || 0,
+            reportedBy: course.reports.reportByUsers
+              ? Object.keys(course.reports.reportByUsers)
+              : [],
+            approved: course.approved,
+          });
+        }
       }
 
       setReports(reportList);
@@ -26,9 +34,19 @@ const ReportedContent = () => {
     return () => unsubscribe();
   }, []);
 
+  const toggleApproval = async (courseId, currentStatus) => {
+    const courseRef = ref(database, `courses/${courseId}`);
+    await update(courseRef, { approved: !currentStatus });
+    alert(
+      `Course "${courseId}" has been ${
+        currentStatus ? "disabled" : "enabled"
+      }.`
+    );
+  };
+
   return (
     <div className="reported-content">
-      <h2>Reported Content</h2>
+      <h2>Reported Courses</h2>
       {reports.length === 0 ? (
         <p className="empty">No reports found.</p>
       ) : (
@@ -36,23 +54,29 @@ const ReportedContent = () => {
           <table>
             <thead>
               <tr>
-                <th>Report ID</th>
+                <th>Course Name</th>
+                <th>Report Count</th>
                 <th>Reported By</th>
-                <th>Content Type</th>
-                <th>Content ID</th>
-                <th>Reason</th>
-                <th>Date</th>
+                <th>Status</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
               {reports.map((report) => (
                 <tr key={report.id}>
-                  <td>{report.id}</td>
-                  <td>{report.reportedBy || "Unknown"}</td>
-                  <td>{report.type || "N/A"}</td>
-                  <td>{report.contentId || "N/A"}</td>
-                  <td>{report.reason || "No reason provided"}</td>
-                  <td>{report.date || "N/A"}</td>
+                  <td>{report.name}</td>
+                  <td>{report.reportCount}</td>
+                  <td>{report.reportedBy.join(", ") || "N/A"}</td>
+                  <td>{report.approved ? "Approved" : "Disabled"}</td>
+                  <td>
+                    <button
+                      onClick={() =>
+                        toggleApproval(report.id, report.approved)
+                      }
+                    >
+                      {report.approved ? "Disable" : "Enable"}
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>

@@ -25,12 +25,26 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("user");
   };
 
+//cut start
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
+  const storedUser = localStorage.getItem("user");
+  try {
+    if (storedUser && storedUser !== "undefined") {
       setUser(JSON.parse(storedUser));
     }
-  }, []);
+  } catch (err) {
+    console.error("Failed to parse stored user:", err);
+    localStorage.removeItem("user"); // cleanup bad value
+  }
+}, []);
+//cut finish
+  //aradhanas code
+  // useEffect(() => {
+  //   const storedUser = localStorage.getItem("user");
+  //   if (storedUser) {
+  //     setUser(JSON.parse(storedUser));
+  //   }
+  // }, []);
 
   return (
     <AuthContext.Provider value={{ user, login, logout }}>

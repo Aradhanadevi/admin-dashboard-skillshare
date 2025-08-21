@@ -92,12 +92,12 @@ const AppLayout = () => {
       icon: <FaUser />,
       path: "/moderator/tutor-approval",
     },
-    {
-      id: "flagged-users",
-      label: "Flagged Users",
-      icon: <FaFlag />,
-      path: "/moderator/flagged-users",
-    },
+    // {
+    //   id: "flagged-users",
+    //   label: "Flagged Users",
+    //   icon: <FaFlag />,
+    //   path: "/moderator/flagged-users",
+    // },
     {
       id: "reported-content",
       label: "Reported Content",
