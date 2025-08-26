@@ -60,11 +60,13 @@ const TutorApproval = () => {
   const pendingTutors = users.filter(
     (user) => user.wanttutorrights && !user.approvedTutor
   );
+
   const approvedTutors = users.filter((user) => user.approvedTutor);
 
-  const filteredPending = pendingTutors.filter((user) =>
-    user.name.toLowerCase().includes(search.toLowerCase()) ||
-    user.email.toLowerCase().includes(search.toLowerCase())
+  const filteredPending = pendingTutors.filter(
+    (user) =>
+      user.name.toLowerCase().includes(search.toLowerCase()) ||
+      user.email.toLowerCase().includes(search.toLowerCase())
   );
 
   const sortedPending = [...filteredPending].sort((a, b) => {
@@ -108,7 +110,9 @@ const TutorApproval = () => {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        <button onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}>
+        <button
+          onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+        >
           Sort {sortOrder === "asc" ? "↑" : "↓"}
         </button>
       </div>
@@ -120,6 +124,7 @@ const TutorApproval = () => {
         <table>
           <thead>
             <tr>
+              <th>Image</th>
               <th>Name</th>
               <th>Email</th>
               <th>Actions</th>
@@ -128,11 +133,27 @@ const TutorApproval = () => {
           <tbody>
             {currentPending.map((user) => (
               <tr key={user.id}>
+                <td>
+                  <img
+                    src={user.tutorVerificationUrl || "/default-user.png"}
+                    alt="Tutor Verification"
+                    style={{
+                      width: "40px",
+                      height: "40px",
+                      borderRadius: "50%",
+                      objectFit: "cover",
+                    }}
+                  />
+                </td>
                 <td>{user.name || "Unnamed"}</td>
                 <td>{user.email}</td>
                 <td>
-                  <button onClick={() => handleApprove(user.id)}>Approve</button>
-                  <button onClick={() => handleDecline(user.id)}>Decline</button>
+                  <button onClick={() => handleApprove(user.id)}>
+                    Approve
+                  </button>
+                  <button onClick={() => handleDecline(user.id)}>
+                    Decline
+                  </button>
                   <button onClick={() => openPopup(user)}>View</button>
                 </td>
               </tr>
@@ -162,6 +183,7 @@ const TutorApproval = () => {
         <table>
           <thead>
             <tr>
+              <th>Image</th>
               <th>Name</th>
               <th>Email</th>
               <th>Revoke</th>
@@ -170,6 +192,18 @@ const TutorApproval = () => {
           <tbody>
             {approvedTutors.map((user) => (
               <tr key={user.id}>
+                <td>
+                  <img
+                    src={user.tutorVerificationUrl || "/default-user.png"}
+                    alt="Tutor Verification"
+                    style={{
+                      width: "40px",
+                      height: "40px",
+                      borderRadius: "50%",
+                      objectFit: "cover",
+                    }}
+                  />
+                </td>
                 <td>{user.name || "Unnamed"}</td>
                 <td>{user.email}</td>
                 <td>

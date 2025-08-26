@@ -34,11 +34,12 @@ const TutorDetailsPopup = ({ tutor, courses, onClose, onApprove, onDecline }) =>
           borderRadius: "12px",
           padding: "20px",
           width: "90%",
-          maxWidth: "400px",
+          maxWidth: "450px",
           position: "relative",
           boxShadow: "0 10px 25px rgba(0,0,0,0.3)",
         }}
       >
+        {/* Close button */}
         <button
           onClick={onClose}
           style={{
@@ -56,22 +57,36 @@ const TutorDetailsPopup = ({ tutor, courses, onClose, onApprove, onDecline }) =>
           &times;
         </button>
 
-        <h2 style={{ fontSize: "20px", fontWeight: "600", marginBottom: "10px" }}>
+        <h2 style={{ fontSize: "20px", fontWeight: "600", marginBottom: "15px" }}>
           Tutor Details
         </h2>
 
-        <div style={{ textAlign: "center", marginBottom: "10px" }}>
+        {/* Tutor Verification Image */}
+        <div style={{ textAlign: "center", marginBottom: "15px" }}>
           <img
-            src={tutor.photourl || "/default-user.png"}
-            alt="Tutor Visual"
+            src={tutor.tutorVerificationUrl || "/default-user.png"}
+            alt="Tutor Verification"
             style={{
-              width: "90px",
-              height: "90px",
-              borderRadius: "50%",
+              width: "120px",
+              height: "120px",
+              borderRadius: "10px",
               objectFit: "cover",
               margin: "0 auto 10px",
+              border: "2px solid #eee",
             }}
           />
+          {tutor.tutorVerificationUrl && (
+            <p>
+              <a
+                href={tutor.tutorVerificationUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: "#007bff", textDecoration: "underline" }}
+              >
+                View Full Verification Image
+              </a>
+            </p>
+          )}
         </div>
 
         <p><strong>Name:</strong> {tutor.name || "N/A"}</p>
@@ -89,7 +104,7 @@ const TutorDetailsPopup = ({ tutor, courses, onClose, onApprove, onDecline }) =>
           </ul>
         )}
 
-        {/* ✅ Conditional buttons or message */}
+        {/* Action Buttons */}
         <div style={{ marginTop: "20px", textAlign: "center" }}>
           {status === "approved" && (
             <p style={{ color: "green", fontWeight: "bold" }}>✅ Approved</p>

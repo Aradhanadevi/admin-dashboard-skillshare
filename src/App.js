@@ -26,7 +26,7 @@ import CoursesTable from "./components/CoursesTable";
 import UsersTable from "./components/UsersTable";
 import AddUserForm from "./components/AddUserForm";
 import RegisteredCoursesTable from "./components/RegisteredCoursesTable";
-import DarkModeToggle from "./components/DarkModeToggle";
+// import DarkModeToggle from "./components/DarkModeToggle";
 import DashboardOverview from "./components/DashboardOverview";
 import AddCourse from "./components/AddCourse";
 import LoginPage from "./pages/LoginPage";

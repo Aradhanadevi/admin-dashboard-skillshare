@@ -119,9 +119,9 @@ const DashboardPage = () => {
 
       setUsers(usersArray);
       setTotals((prev) => ({ ...prev, users: usersArray.length }));
-      // setSkillOfferedCounts(offered);
-      // setSkillRequestedCounts(requested);
-      // setLocationCounts(locations);
+      setSkillOfferedCounts(offered);
+      setSkillRequestedCounts(requested);
+      setLocationCounts(locations);
       // setTutorRequestsCount(tutorReqs);
       // setReportedUsersCount(reported);
       // setSystemMessagesCount(systemMsgs);
