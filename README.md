@@ -1,70 +1,42 @@
-# Getting Started with Create React App
+--- Skill Share Application --- <br><br>
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Created & Owned By:
+👽 Anjali Valani & 👽 Aradhanadevi Jadeja
 
-## Available Scripts
+📌 About the Project
 
-In the project directory, you can run:
+The Skill Share Application is a platform designed to connect learners and tutors while providing role-based access and functionality.
 
-### `npm start`
+We have 4 main roles:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+User (Mobile App) – Learners who can explore and learn skills.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Tutor (Mobile App) – Experts who can share their skills with users.
 
-### `npm test`
+Admin (Web) – Manages the overall platform.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Moderator (Web) – Handles content and user activities.
 
-### `npm run build`
+📂 Repositories
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+📱 Application (User & Tutor): SkillShareApp
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+💻 Web (Admin & Moderator): admin-dashboard-skillshare
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+🎥 Video Demos
 
-### `npm run eject`
+📱 SkillShare App (User & Tutor): Watch Demo
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+💻 SkillShare Web (Admin & Moderator): (Demo link coming soon)
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+🌍 Live Hosted Web
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+Access the Admin & Moderator Dashboard here:
+👉 admin-dashboard-skillshare.vercel.app
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+📖 Documentation
 
-## Learn More
+Want to dive deeper? Check out our complete documentation here:
+📄 Skill Share Docs
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+✨ Built with passion by Anjali Valani & Aradhanadevi Jadeja ✨
